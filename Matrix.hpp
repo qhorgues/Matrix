@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <vector>
 
-template <typename T/* , std::size_t N, std::size_t M */>
+template <typename T = int/* , std::size_t N, std::size_t M */>
 class Matrix final
 {
     static_assert(std::is_arithmetic_v<T>, "The type of a matrix must be floating or real");

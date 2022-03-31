@@ -24,9 +24,11 @@ std::size_t Matrix<T>::numberColumns() const noexcept
 template <typename T>
 std::size_t Matrix<T>::offset(std::size_t const n, std::size_t const m) const noexcept
 {
-    assert(n < m_numberColumns && "Line requested invalid.");
-    assert(m < m_numberLines && "Column requested invalid.");
-    return m * m_numberColumns + n;
+    /* assert(n < m_numberColumns && "Line requested invalid.");
+    assert(m < m_numberLines && "Column requested invalid."); */
+    std::size_t const index = m * m_numberColumns + n;
+    // assert(index < m_numberLines * m_numberColumns && "The offset return a invalid index.");
+    return index;
 }
 
 template <typename T>
@@ -114,7 +116,7 @@ template<typename T>
 Matrix<T> operator*(Matrix<T> const & matrix_left, Matrix<T> const & matrix_right)
 {
     assert(matrix_left.numberColumns() == matrix_right.numberLines() && "The seconde matrix must have the same number of collons as the line on the first matrix");
-
+    // Attend il y a pas une formule de pour verifier mutiplication M(i x n) * M(n x j) = M(i x j) i nombres de lignes, j nombres de colonnes.
     Matrix<T> destination {matrix_left.numberLines(), matrix_right.numberColumns()};
     for (std::size_t i { 0 }; i < matrix_left.numberLines() * matrix_right.numberColumns(); i++)
     {
@@ -123,6 +125,7 @@ Matrix<T> operator*(Matrix<T> const & matrix_left, Matrix<T> const & matrix_righ
         T summe = 0;
         for (std::size_t j { 0 }; j < matrix_left.numberColumns() ; j++)
         {
+            std::cout << n << ':' << m << std::endl;
             summe += matrix_left(j, m) * matrix_right(n, j);
         }
         destination(n, m) = summe;
