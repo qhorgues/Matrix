@@ -5,43 +5,43 @@
 template<typename T>
 void secureEntry(T& var)
 {
-    while (!(std::cin >> var))
-    {
-        if (std::cin.eof())
-        {
-            throw std::runtime_error("The stream has been closed");
-        }
-        else if (std::cin.fail())
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::runtime_error("Invalid entry");
-        }
-        else
-        {
-            throw std::invalid_argument("The predicate is not respected");
-        }
-    }
+	while (!(std::cin >> var))
+	{
+		if (std::cin.eof())
+		{
+			throw std::runtime_error("The stream has been closed");
+		}
+		else if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			throw std::runtime_error("Invalid entry");
+		}
+		else
+		{
+			throw std::invalid_argument("The predicate is not respected");
+		}
+	}
 }
 
 template <typename T, typename Predicat>
-void secureEntry(T & var, Predicat predicat)
+void secureEntry(T& var, Predicat predicat)
 {
-    while (!(std::cin >> var) || !predicat(var))
-    {
-        if (std::cin.eof())
-        {
-            throw std::runtime_error("The stream has been closed");
-        }
-        else if (std::cin.fail())
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            throw std::invalid_argument("Invalid entry");
-        }
-        else
-        {
-            throw std::invalid_argument("The predicate is not respected");
-        }
-    }
+	while (!(std::cin >> var) || !predicat(var))
+	{
+		if (std::cin.eof())
+		{
+			throw std::runtime_error("The stream has been closed");
+		}
+		else if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			throw std::invalid_argument("Invalid entry");
+		}
+		else
+		{
+			throw std::invalid_argument("The predicate is not respected");
+		}
+	}
 }
