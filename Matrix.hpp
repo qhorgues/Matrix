@@ -1,20 +1,32 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef MATRIX_HPP
+#define MATRIX_HPP
 
 #include <array>
+#include <initializer_list>
+#include <concepts>
 #include <type_traits>
 
-template <typename T, std::size_t LINES, std::size_t COLUMNS>
+template <typename T>
+concept arithmetic = std::is_arithmetic_v<T>;
+
+template <typename T>
+concept MathObj = requires(T lhs, T rhs)
+{
+	lhs + rhs == rhs + lhs;
+	lhs - rhs;
+	lhs * rhs;
+};    
+
+template <MathObj T, std::size_t LINES, std::size_t COLUMNS = LINES>
 class Matrix final
 {
-	static_assert (std::is_arithmetic_v<T>,
-		"The type of a matrix must be floating or real");
 	static_assert (LINES > 0 || COLUMNS > 0,
 		"The matrix cannot have a zero size");
 
 public:
 	Matrix() = default;
 	constexpr Matrix(T const initialValue);
+	constexpr Matrix(std::initializer_list<std::initializer_list<T>> const & matrix);
 	constexpr ~Matrix() noexcept = default;
 
 	Matrix(Matrix const& matrix) = default;
@@ -30,37 +42,37 @@ public:
 		std::size_t const columns) const noexcept;
 	constexpr T& operator() (std::size_t const lines, std::size_t const columns);
 
-	constexpr Matrix<T, LINES, COLUMNS>&
+	constexpr Matrix<T, LINES, COLUMNS>
 		operator+= (Matrix<T, LINES, COLUMNS> const& matrix) noexcept;
 
 	template <typename U, std::size_t N, std::size_t M>
 	constexpr friend Matrix<U, N, M>
 		operator+ (Matrix<U, N, M> matrix_left, Matrix<U, N, M> const& matrix_right) noexcept;
 
-	constexpr Matrix<T, LINES, COLUMNS>&
+	constexpr Matrix<T, LINES, COLUMNS>
 		operator-= (Matrix<T, LINES, COLUMNS> const& matrix) noexcept;
 
-	template <typename U, std::size_t N, std::size_t M>
+	template <MathObj U, std::size_t N, std::size_t M>
 	constexpr friend Matrix<U, N, M>
 		operator- (Matrix<U, N, M> matrix_left, Matrix<U, N, M> const& matrix_right) noexcept;
 
 	constexpr Matrix<T, LINES, COLUMNS>& operator*= (int const multiplier) noexcept;
 
-	template <typename U, std::size_t N, std::size_t M>
+	template <MathObj U, std::size_t N, std::size_t M, arithmetic V>
 	constexpr friend Matrix<U, N, M> operator* (Matrix<U, N, M> matrix,
-		int const multiplier) noexcept;
+		V const multiplier) noexcept;
 
-	template <typename U, std::size_t N, std::size_t M>
-	constexpr friend Matrix<U, N, M> operator* (int const multiplier,
+        template <MathObj U, std::size_t N, std::size_t M, arithmetic V>
+	constexpr friend Matrix<U, N, M> operator* (V const multiplier,
 		Matrix<U, N, M> matrix) noexcept;
 
-	template <typename U, std::size_t LINES_M1, std::size_t SHARED,
+	template <MathObj U, std::size_t LINES_M1, std::size_t SHARED,
 		std::size_t COLUMNS_M2>
 		constexpr friend Matrix<U, LINES_M1, COLUMNS_M2>
 		operator* (Matrix<U, LINES_M1, SHARED> const& matrix_left,
 			Matrix<U, SHARED, LINES_M1> const& matrix_right) noexcept;
 
-	template <typename U, std::size_t N, std::size_t M>
+	template <MathObj U, std::size_t N, std::size_t M>
 	friend std::ostream& operator<< (std::ostream& out,
 		Matrix<U, N, M> const& matrix);
 
@@ -79,9 +91,12 @@ private:
 	constexpr std::size_t strSizeMax() const;
 	constexpr std::size_t strSize(T const value) const;
 
+	constexpr std::array<T, COLUMNS*LINES>
+	array_matrix_with_initializer_list(std::initializer_list<std::initializer_list<T>> const & matrix);
+
 	std::array<T, LINES* COLUMNS> m_matrix{ 0 };
 };
 
 #include "Matrix.tpp"
 
-#endif // MATRIX_H
+#endif // MATRIX_HPP
