@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <concepts>
 #include <type_traits>
+#include <ostream>
 
 template <typename T>
 concept arithmetic = std::is_arithmetic_v<T>;
