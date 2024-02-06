@@ -166,7 +166,7 @@ constexpr std::size_t Matrix<T, LINES, COLUMNS>::strSize(T const value) const
 	{
 		if (value != 0)
 		{
-			size = static_cast<std::size_t>(value) + 1;
+			size = static_cast<std::size_t>(log10(value)) + 1;
 		}
 	}
 	else
