@@ -166,7 +166,7 @@ constexpr std::size_t Matrix<T, LINES, COLUMNS>::strSize(T const value) const
 	{
 		if (value != 0)
 		{
-			size = log10(value) + 1;
+			size = static_cast<std::size_t>(value) + 1;
 		}
 	}
 	else
@@ -227,7 +227,7 @@ operator<<(std::ostream &out, Matrix<T, LINES, COLUMNS> const &matrix)
 		for (std::size_t j{0}; j < matrix.numberColumns(); j++)
 		{
 			std::size_t const size = maxSize - matrix.strSize(matrix(i, j));
-			out << std::setw(size) << matrix(i, j) << ' ';
+			out << std::setw(static_cast<int>(size)) << matrix(i, j) << ' ';
 		}
 		if (i == 0)
 		{
