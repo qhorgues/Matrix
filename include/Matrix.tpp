@@ -1,9 +1,10 @@
 #include <cassert>
 #include <algorithm>
 #include <string>
-#include <iostream>
+#include <ostream>
 #include <iomanip>
 #include <cmath>
+#include "Matrix.hpp"
 
 template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
 constexpr Matrix<T, LINES, COLUMNS>::Matrix(T const initialValue)
@@ -16,6 +17,27 @@ constexpr Matrix<T, LINES, COLUMNS>::Matrix(std::initializer_list<std::initializ
 m_matrix()
 {
 	m_matrix = array_matrix_with_initializer_list(matrix);
+}
+
+template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
+constexpr Matrix<T, LINES, COLUMNS>::Matrix(SubBloc const& a, SubBloc const& b, SubBloc const& c, SubBloc const& d)
+ : m_matrix()
+{
+	static_assert( (LINES % 2 == 0 || COLUMNS % 2 == 0) 
+						&& "Le constructeur par bloc n'est valable que pour des matrices de taille pair" );
+	constexpr std::size_t N { LINES/2 };
+	constexpr std::size_t M { COLUMNS/2 };
+
+	for (std::size_t i {0}; i < N; i++)
+	{
+		for (std::size_t j {0}; j < M; j++)
+		{
+			m_matrix[offset(i, j)] = a(i, j);
+			m_matrix[offset(i, j + M)] = b(i, j);
+			m_matrix[offset(i + N, j)] = c(i, j);
+			m_matrix[offset(i + N, j + M)] = d(i, j);
+		}
+	}
 }
 
 template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
@@ -328,4 +350,16 @@ Matrix<T, LINES, COLUMNS>::array_matrix_with_initializer_list(
 		it_mat_dst += COLUMNS;
 	}
 	return array_matrix;
+}
+
+template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
+constexpr Matrix<T, LINES, COLUMNS> Matrix<T, LINES, COLUMNS>::identity() noexcept
+{
+	static_assert(LINES == COLUMNS && "not identity matrix in non square matrix");
+	Matrix<T, LINES, COLUMNS> Id {};
+	for (std::size_t i { 0 }; i < LINES; i++)
+	{
+		Id(i, i) = static_cast<T>(1);
+	}
+	return Id;
 }
