@@ -30,9 +30,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 endif()
 endif (MINGW)
 
-#if (BUILD_TESTING)
+set_option (BUILD_TESTING_MATRIX OFF BOOL "Compile matrix test")
+
+if (BUILD_TESTING_MATRIX)
     add_subdirectory(${CMAKE_SOURCE_DIR}/test)
-#endif()
+endif()
 
 add_library (${PROJECT_NAME} INTERFACE ${SRCS} ${HEADERS})
 
