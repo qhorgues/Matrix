@@ -90,11 +90,14 @@ public:
 
 	constexpr static Matrix<T, LINES, COLUMNS> identity() noexcept;
 
+	template <std::size_t N, std::size_t M>
+	constexpr Matrix<T, LINES*N, COLUMNS*M> tensoriel_product(Matrix<T, N, M> const& rhs) const noexcept;
+
 private:
 	constexpr std::size_t offset(std::size_t const lines,
 								 std::size_t const columns) const noexcept;
 
-	constexpr std::size_t strSizeMax() const;
+	constexpr std::array<std::size_t, COLUMNS> strSizeMax() const;
 	constexpr std::size_t strSize(T const value) const;
 
 	constexpr std::array<T, COLUMNS * LINES>

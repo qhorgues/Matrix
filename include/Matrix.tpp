@@ -200,18 +200,20 @@ constexpr std::size_t Matrix<T, LINES, COLUMNS>::strSize(T const value) const
 }
 
 template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
-constexpr std::size_t Matrix<T, LINES, COLUMNS>::strSizeMax() const
+constexpr std::array<std::size_t, COLUMNS> Matrix<T, LINES, COLUMNS>::strSizeMax() const
 {
-	std::size_t maxSize{0};
-	for (T const e : m_matrix)
+	std::array<std::size_t, COLUMNS> maxSize {};
+	for (std::size_t i {0}; i < LINES; i++)
 	{
-		std::size_t size = strSize(e);
-		if (size > maxSize)
+		for (std::size_t j {0}; j < COLUMNS; j++)
 		{
-			maxSize = size;
+			std::size_t size = strSize(m_matrix[offset(i, j)]);
+			if (size > maxSize[j])
+			{
+				maxSize[j] = size;
+			}
 		}
 	}
-
 	return maxSize;
 }
 
@@ -219,7 +221,6 @@ template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
 std::ostream &
 operator<<(std::ostream &out, Matrix<T, LINES, COLUMNS> const &matrix)
 {
-	std::size_t maxSize{matrix.strSizeMax()};
 	out << std::setfill(' ');
 	if constexpr (LINES == 1)
 	{
@@ -234,30 +235,35 @@ operator<<(std::ostream &out, Matrix<T, LINES, COLUMNS> const &matrix)
 	}
 	else
 	{
-		out << "/ ";
+		out << "/";
 	}
+	std::array<std::size_t, COLUMNS> maxSize {matrix.strSizeMax()};
 	for (std::size_t i{0}; i < matrix.numberLines(); i++)
 	{
 		if (i == matrix.numberLines() -1)
 		{
-			out << "\\ ";
+			out << '\\';
 		}
 		else if (i > 0)
 		{
-			out << "| ";
+			out << '|';
 		}
 		for (std::size_t j{0}; j < matrix.numberColumns(); j++)
 		{
-			std::size_t const size = maxSize - matrix.strSize(matrix(i, j));
-			out << std::setw(static_cast<int>(size)) << matrix(i, j) << ' ';
+			std::size_t const size = maxSize[j] - matrix.strSize(matrix(i, j));
+			if (size > 0)
+			{
+				out << std::setw(static_cast<int>(size)+1);
+			}
+			out << ' ' << matrix(i, j);
 		}
 		if (i == 0)
 		{
-			out << '\\' << std::endl;
+			out << " \\" << std::endl;
 		}
 		else if (i < matrix.numberLines() -1)
 		{
-			out << '|' << std::endl;
+			out << " |" << std::endl;
 		}
 	}
 	if constexpr (LINES == 1)
@@ -266,29 +272,8 @@ operator<<(std::ostream &out, Matrix<T, LINES, COLUMNS> const &matrix)
 	}
 	else
 	{
-		out << "/ " << std::endl;
+		out << " / " << std::endl;
 	}
-	/*
-	for (std::size_t i{0}; i < matrix.numberLines(); i++)
-	{
-
-		for (std::size_t j{0}; j < matrix.numberColumns(); j++)
-		{
-			std::size_t size = maxSize - matrix.strSize(matrix(i, j));
-
-			out << "|";
-			for (std::size_t k{0}; k < size % 2 + 1 || k < 1; k++)
-			{
-				out << ' ';
-			}
-			out << matrix(i, j);
-			for (std::size_t k{0}; k < size % 2 || k < 1; k++)
-			{
-				out << ' ';
-			}
-		}
-		out << '|' << std::endl;
-	}*/
 	return out;
 }
 
@@ -362,4 +347,25 @@ constexpr Matrix<T, LINES, COLUMNS> Matrix<T, LINES, COLUMNS>::identity() noexce
 		Id(i, i) = static_cast<T>(1);
 	}
 	return Id;
+}
+
+template <MathObj T, std::size_t LINES, std::size_t COLUMNS>
+template <std::size_t N, std::size_t M>
+constexpr Matrix<T, LINES*N, COLUMNS*M> Matrix<T, LINES, COLUMNS>::tensoriel_product(Matrix<T, N, M> const& rhs) const noexcept
+{
+	Matrix<T, LINES*N, COLUMNS*M> res {};
+	for (std::size_t i {0}; i < LINES; i++)
+	{
+		for (std::size_t j {0}; j < COLUMNS; j++)
+		{
+			for (std::size_t k {0}; k < N; k++)
+			{
+				for (std::size_t l {0}; l < M; l++)
+				{
+					res(k + i*N, l + j * M) = m_matrix[offset(i, j)] * rhs(k, l);
+				}
+			}
+		}
+	}
+	return res;
 }

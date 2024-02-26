@@ -25,4 +25,13 @@ int main()
         std::cout << mat1 << " *\n" << mat2 << " =\n" << mat << std::endl;
         std::cout << A << std::endl;
 
+        constexpr Matrix<int, 3> B {
+                {5, 3, 6},
+                {4, 6, 2},
+                {9, 4, 2}
+        };
+
+        std::cout << (6 * Matrix<int, 4>::identity()).tensoriel_product(B) << std::endl;
+
+        return 0;
 }
