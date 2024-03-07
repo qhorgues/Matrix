@@ -329,8 +329,7 @@ Matrix<T, LINES, COLUMNS>::array_matrix_with_initializer_list(
 	auto it_mat_dst { std::begin(array_matrix) };
 	for (std::initializer_list<T> const & e : matrix)
 	{
-		std::size_t const size_sub_list { std::size(e) };
-		assert(size_sub_list <= COLUMNS && "Value entry out of matrix");
+		assert(std::size(e) <= COLUMNS && "Value entry out of matrix");
 		std::move(std::begin(e), std::end(e), it_mat_dst);
 		it_mat_dst += COLUMNS;
 	}
